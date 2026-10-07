@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#5b4bdb">
+<title>Suno Song Creator Coach</title>
+<style>
+:root{
+  --primary:#5b4bdb;--primary2:#4435b8;--bg:#f5f7fb;--card:#fff;
+  --text:#202331;--muted:#667085;--border:#d9deea;--success:#16794c;
+  --danger:#b42318;--shadow:0 4px 18px rgba(30,35,60,.08);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.5}
+.container{max-width:900px;margin:auto;padding:18px 14px 50px}
+header{background:linear-gradient(135deg,var(--primary),#7b68ee);color:#fff;border-radius:20px;padding:24px 20px;margin-bottom:16px;box-shadow:var(--shadow)}
+h1{font-size:30px;line-height:1.15;margin:0 0 8px}
+h2{font-size:23px;margin:0 0 14px}
+h3{font-size:19px;margin:18px 0 8px}
+.subtitle{opacity:.94;margin:0}
+.status{margin-top:12px;font-size:14px;display:flex;gap:8px;align-items:center}
+.dot{width:9px;height:9px;border-radius:50%;background:#8ff0b9;display:inline-block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;margin:14px 0;box-shadow:var(--shadow)}
+.step{display:inline-flex;align-items:center;justify-content:center;background:var(--primary);color:#fff;border-radius:50%;width:32px;height:32px;font-weight:700;margin-right:8px}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input,select,textarea{width:100%;border:1px solid var(--border);border-radius:12px;padding:13px 14px;font:inherit;background:#fff;color:var(--text)}
+textarea{min-height:110px;resize:vertical}
+.small{font-size:14px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+button{border:0;border-radius:12px;padding:13px 17px;font:inherit;font-weight:700;cursor:pointer;background:var(--primary);color:#fff}
+button:hover{background:var(--primary2)}
+button.secondary{background:#eef0f7;color:var(--text)}
+button.success{background:var(--success)}
+button.danger{background:#fff0ef;color:var(--danger);border:1px solid #f2c5c0}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap}
+.preset-row button{background:#eef0ff;color:#3e329b}
+.notice{background:#f0f4ff;border-left:4px solid var(--primary);padding:12px 14px;border-radius:8px;margin:12px 0}
+.warning{background:#fff8e8;border-left:4px solid #d99000;padding:12px 14px;border-radius:8px;margin:12px 0}
+.output{background:#101828;color:#f7f9fc;border-radius:14px;padding:15px;white-space:pre-wrap;word-break:break-word;min-height:150px}
+.output textarea{background:#101828;color:#fff;border:1px solid #475467;min-height:320px}
+.checkbox{display:flex;gap:10px;align-items:flex-start;margin-top:12px}
+.checkbox input{width:auto;margin-top:5px}
+.song{border:1px solid var(--border);border-radius:14px;padding:14px;margin:10px 0;background:#fafbfe}
+.song-title{font-weight:800;font-size:18px}
+.song-meta{font-size:14px;color:var(--muted);margin:4px 0 8px}
+a{color:var(--primary);font-weight:700}
+.hidden{display:none}
+hr{border:0;border-top:1px solid var(--border);margin:22px 0}
+footer{text-align:center;color:var(--muted);font-size:13px;margin-top:22px}
+@media(max-width:650px){
+ .grid{grid-template-columns:1fr}
+ h1{font-size:27px}
+ .card{padding:16px}
+ button{width:100%}
+ .preset-row button{width:auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>🎵 Suno Song Creator Coach</h1>
+  <p class="subtitle">Plan your song, create clear AI instructions, prepare everything for Suno, and keep your finished song links.</p>
+  <div class="status"><span class="dot"></span> Works offline for planning and saved records</div>
+</header>
+
+<section class="card">
+  <h2><span class="step">1</span>Choose a starting preset</h2>
+  <p class="small">A preset fills the form for you. You can edit every field afterward.</p>
+  <div class="preset-row">
+    <button type="button" onclick="loadPreset('example')">⭐ Inspirational</button>
+    <button type="button" onclick="loadPreset('pop')">🎤 Pop</button>
+    <button type="button" onclick="loadPreset('ballad')">💙 Ballad</button>
+    <button type="button" onclick="loadPreset('relax')">🧘 Relaxing</button>
+    <button type="button" onclick="loadPreset('birthday')">🎂 Celebration</button>
+    <button type="button" onclick="loadPreset('duet')">👫 Duet</button>
+    <button type="button" onclick="loadPreset('spoken')">🗣 Spoken</button>
+    <button type="button" onclick="loadPreset('instrumental')">🎹 Instrumental</button>
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="step">2</span>Describe your song</h2>
+  <div class="grid">
+    <div>
+      <label for="title">Song Title</label>
+      <input id="title" placeholder="e.g. Small Steps, Better Every Day">
+    </div>
+    <div>
+      <label for="duration">Desired Duration</label>
+      <select id="duration">
+        <option>2 minutes</option><option>3 minutes</option><option selected>4 minutes</option>
+        <option>5 minutes</option><option>6 minutes</option><option>7 minutes</option><option>8 minutes</option>
+      </select>
+    </div>
+  </div>
+
+  <label for="about">What is the song about?</label>
+  <textarea id="about" placeholder="Describe the story, message, people, memories or feelings you want in the song."></textarea>
+
+  <div class="grid">
+    <div>
+      <label for="genre">Genre / Music Style</label>
+      <input id="genre" placeholder="e.g. soft pop, acoustic, jazz">
+    </div>
+    <div>
+      <label for="mood">Mood</label>
+      <input id="mood" placeholder="e.g. warm, hopeful, uplifting">
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <label for="singers">Singer / Vocal Setup</label>
+      <select id="singers">
+        <option>Single male singer</option>
+        <option>Single female singer</option>
+        <option>Male + female duet</option>
+        <option>Male + male duet</option>
+        <option>Female + female duet</option>
+        <option>Spoken word</option>
+        <option>Spoken word + singing</option>
+        <option>Instrumental — no singer</option>
+      </select>
+    </div>
+    <div>
+      <label for="language">Language</label>
+      <input id="language" value="English" placeholder="e.g. English, Japanese, Mandarin">
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <label for="voice">Voice Character</label>
+      <input id="voice" placeholder="e.g. warm mature male, gentle female">
+    </div>
+    <div>
+      <label for="instruments">Instruments / Sound</label>
+      <input id="instruments" placeholder="e.g. piano, acoustic guitar, strings">
+    </div>
+  </div>
+
+  <label for="structure">Song Structure</label>
+  <input id="structure" placeholder="e.g. Intro, Verse, Chorus, Verse, Chorus, Bridge, Final Chorus, Outro">
+
+  <label for="additional">Additional Instructions</label>
+  <textarea id="additional" placeholder="Anything else: tempo, energy, lyrical style, audience, story details, words to avoid, pronunciation notes, etc."></textarea>
+
+  <div class="checkbox">
+    <input type="checkbox" id="fade" checked>
+    <div><strong>Slow fade ending + 3 seconds silence</strong><br>
+      <span class="small">Ask for the song to gradually fade out, followed by approximately 3 seconds of silence to avoid an abrupt ending.</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button type="button" onclick="generatePrompt()">✨ Generate AI Instructions</button>
+    <button type="button" class="secondary" onclick="loadPreset('example')">Load Example</button>
+    <button type="button" class="secondary" onclick="resetForm()">Reset Form</button>
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="step">3</span>AI instructions</h2>
+  <div class="notice">Copy this instruction and send it to your AI assistant. The AI should create the lyrics and music directions based on your choices.</div>
+  <textarea id="aiPrompt" class="hidden" aria-label="Generated AI instructions"></textarea>
+  <div id="promptPlaceholder" class="output">Your generated instruction will appear here.</div>
+  <div class="actions">
+    <button type="button" onclick="copyAI()">📋 Copy AI Instructions</button>
+    <button type="button" class="secondary" onclick="generatePrompt()">🔄 Regenerate</button>
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="step">4</span>Paste the AI result here</h2>
+  <p class="small">After the AI gives you the lyrics and Suno directions, paste them below. You can edit them before copying to Suno.</p>
+
+  <label for="lyrics">Lyrics</label>
+  <textarea id="lyrics" placeholder="[Intro]
+...
+
+[Verse 1]
+...
+
+[Chorus]
+..."></textarea>
+
+  <label for="styles">Suno Styles / Music Direction</label>
+  <textarea id="styles" placeholder="Paste the music/style direction here."></textarea>
+
+  <label for="sunoPrompt">Other Suno Instructions</label>
+  <textarea id="sunoPrompt" placeholder="Optional final instructions or notes for Suno."></textarea>
+
+  <div class="actions">
+    <button type="button" onclick="copyText('lyrics')">📋 Copy Lyrics</button>
+    <button type="button" onclick="copyText('styles')">📋 Copy Styles</button>
+    <button type="button" class="success" onclick="copyAllSuno()">🎵 Copy All for Suno</button>
+  </div>
+
+  <div class="notice">
+    <strong>Typical Suno workflow:</strong><br>
+    1. Copy the AI result. → 2. Open Suno. → 3. Use Custom mode when you want to enter your own lyrics/styles. → 4. Paste the lyrics and style directions. → 5. Create the song. → 6. Listen and refine.
+  </div>
+</section>
+
+<section class="card">
+  <h2><span class="step">5</span>Save your finished song</h2>
+  <label for="songUrl">Suno Song Link</label>
+  <input id="songUrl" type="url" placeholder="https://suno.com/...">
+  <label for="notes">Notes</label>
+  <textarea id="notes" placeholder="What do you like? What should be changed next time?"></textarea>
+  <div class="actions">
+    <button type="button" class="success" onclick="saveSong()">💾 Save Song</button>
+  </div>
+  <p class="small">Saved records stay in this browser/device using local storage. No account or server is required.</p>
+</section>
+
+<section class="card">
+  <h2>📚 My Songs</h2>
+  <input id="searchSongs" placeholder="Search saved songs..." oninput="renderSongs()">
+  <div id="songsList"></div>
+</section>
+
+<section class="card">
+  <h2>ℹ️ How this app works</h2>
+  <p><strong>This app does not generate music itself.</strong> It helps you prepare a good brief for an AI assistant, then organize the result for use in Suno.</p>
+  <p>Exact duration, fade-out length and silence are not guaranteed by the AI or Suno. If the ending is abrupt, use Suno's editing tools where available to adjust the ending.</p>
+  <p>For current Suno features and controls, always check the official Suno website/help because the interface and available features can change.</p>
+  <p><a href="https://suno.com/" target="_blank" rel="noopener">Open Suno ↗</a></p>
+</section>
+
+<footer>
+  Suno Song Creator Coach • Personal planning tool • No music is uploaded by this app
+</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const presets = {
+  example:{
+    title:"Small Steps, Better Every Day",
+    duration:"4 minutes", about:"An inspirational song about enjoying life, staying positive, appreciating simple everyday moments and making small improvements after retirement. The message should be warm, hopeful and encouraging.",
+    genre:"Soft pop / acoustic", mood:"Warm, hopeful, uplifting",
+    singers:"Male + female duet", language:"English",
+    voice:"Warm mature male and gentle mature female", instruments:"Piano, acoustic guitar, light strings",
+    structure:"Intro, Verse 1, Chorus, Verse 2, Chorus, Bridge, Final Chorus, Outro",
+    additional:"Keep the lyrics easy to understand and memorable. Make the duet feel like two people sharing life's journey rather than simply singing alternate lines."
+  },
+  pop:{title:"",duration:"3 minutes",about:"",genre:"Modern pop",mood:"Upbeat and catchy",singers:"Single female singer",language:"English",voice:"Clear, expressive",instruments:"Piano, bass, drums, modern synths",structure:"Intro, Verse, Chorus, Verse, Chorus, Bridge, Final Chorus, Outro",additional:"Strong memorable chorus and a clear emotional build."},
+  ballad:{title:"",duration:"4 minutes",about:"",genre:"Emotional piano ballad",mood:"Emotional, reflective, hopeful",singers:"Single male singer",language:"English",voice:"Warm and emotional",instruments:"Piano, strings, subtle percussion",structure:"Intro, Verse 1, Chorus, Verse 2, Chorus, Bridge, Final Chorus, Outro",additional:"Begin intimate and gradually build to an emotional final chorus."},
+  relax:{title:"",duration:"5 minutes",about:"",genre:"Relaxing ambient / acoustic",mood:"Peaceful, calm, soothing",singers:"Single female singer",language:"English",voice:"Soft, gentle",instruments:"Soft piano, acoustic guitar, ambient pads",structure:"Intro, Verse, Chorus, Verse, Chorus, Outro",additional:"Slow tempo. Leave plenty of breathing space between phrases. Avoid dramatic percussion."},
+  birthday:{title:"Happy Birthday",duration:"3 minutes",about:"A warm celebration of someone's life, memories, family and friendship.",genre:"Feel-good pop",mood:"Joyful, warm, celebratory",singers:"Male + female duet",language:"English",voice:"Warm and friendly",instruments:"Piano, acoustic guitar, light drums, strings",structure:"Intro, Verse, Chorus, Verse, Chorus, Bridge, Final Chorus, Outro",additional:"Make the chorus easy for friends and family to sing along with."},
+  duet:{title:"",duration:"4 minutes",about:"",genre:"Acoustic pop duet",mood:"Warm and emotional",singers:"Male + female duet",language:"English",voice:"Warm mature male and gentle female",instruments:"Piano, acoustic guitar, light strings",structure:"Intro, Verse 1 male, Verse 2 female, Chorus together, Bridge alternating, Final Chorus together, Outro",additional:"Clearly label male and female parts. Make the final chorus a strong shared moment."},
+  spoken:{title:"",duration:"4 minutes",about:"",genre:"Cinematic ambient",mood:"Reflective and inspiring",singers:"Spoken word + singing",language:"English",voice:"Warm mature narrator plus gentle singer",instruments:"Piano, ambient pads, light strings",structure:"Spoken Intro, Verse, Chorus, Spoken Bridge, Final Chorus, Spoken Outro",additional:"Clearly distinguish spoken passages from sung passages. Keep spoken delivery natural and unhurried."},
+  instrumental:{title:"",duration:"4 minutes",about:"",genre:"Cinematic instrumental",mood:"Hopeful and uplifting",singers:"Instrumental — no singer",language:"English",voice:"",instruments:"Piano, acoustic guitar, strings, soft percussion",structure:"Intro, Theme A, Theme B, Build, Peak, Outro",additional:"No vocals. Create a clear musical story with a gentle beginning, gradual development and satisfying ending."}
+};
+
+function loadPreset(name){
+  const p=presets[name]||presets.example;
+  Object.entries(p).forEach(([k,v])=>{if($(k)) $(k).value=v;});
+  $("fade").checked=true;
+  generatePrompt(false);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function resetForm(){
+  ["title","about","genre","mood","language","voice","instruments","structure","additional","lyrics","styles","sunoPrompt","songUrl","notes","aiPrompt"].forEach(id=>$(id).value="");
+  $("duration").value="4 minutes"; $("singers").value="Single male singer"; $("fade").checked=true;
+  $("promptPlaceholder").textContent="Your generated instruction will appear here.";
+  $("promptPlaceholder").classList.remove("hidden"); $("aiPrompt").classList.add("hidden");
+}
+function getData(){
+ return {
+  title:$("title").value.trim(),about:$("about").value.trim(),duration:$("duration").value,
+  genre:$("genre").value.trim(),mood:$("mood").value.trim(),singers:$("singers").value,
+  language:$("language").value.trim(),voice:$("voice").value.trim(),instruments:$("instruments").value.trim(),
+  structure:$("structure").value.trim(),additional:$("additional").value.trim(),fade:$("fade").checked
+ };
+}
+function generatePrompt(scroll=true){
+ const d=getData();
+ const missing=[];
+ if(!d.title) missing.push("song title");
+ if(!d.about) missing.push("what the song is about");
+ if(!d.genre) missing.push("genre/music style");
+ if(!d.language) missing.push("language");
+ let p=`You are helping me create an original song for Suno.
+
+SONG BRIEF
+Title: ${d.title||"[User will provide title]"}
+Subject / story: ${d.about||"[User will provide the story]"}
+Desired duration: ${d.duration}
+Genre / music style: ${d.genre||"[User will provide style]"}
+Mood: ${d.mood||"[Choose a suitable mood based on the story]"}
+Vocal setup: ${d.singers}
+Language: ${d.language||"[User will provide language]"}
+Voice character: ${d.voice||"[Choose an appropriate voice character]"}
+Instruments / sound: ${d.instruments||"[Choose suitable instruments]"}
+Song structure: ${d.structure||"[Choose an appropriate structure]"}
+
+ADDITIONAL INSTRUCTIONS
+${d.additional||"Use your judgement to make the song coherent, memorable and emotionally appropriate."}
+
+ENDING
+${d.fade?"End with a gradual, natural fade-out rather than an abrupt stop. After the music fades, aim for approximately 3 seconds of silence. Do not treat the exact 3-second silence or exact duration as guaranteed; write the instruction clearly so it can be refined in Suno if necessary.":"Use a natural ending appropriate to the song."}
+
+PLEASE RETURN THESE FOUR PARTS
+1. FINAL LYRICS
+Write complete original lyrics with clear section labels such as [Intro], [Verse], [Pre-Chorus], [Chorus], [Bridge], [Final Chorus] and [Outro] where appropriate. Keep the lyrics natural for singing. Do not imitate a living artist.
+
+2. SUNO STYLES / MUSIC DIRECTION
+Give a concise copy-ready description of genre, mood, tempo, instrumentation, vocal character, production feel and duet/spoken arrangement where applicable.
+
+3. SUNO SETUP CHECKLIST
+Briefly explain which text should go into Suno's Lyrics field and which text should go into the Styles/music-direction field.
+
+4. FINAL COPY-READY SUNO BRIEF
+Give a clean final version that I can paste into Suno or use while setting up the song.
+
+SPECIAL REQUIREMENTS
+- Preserve the requested language.
+- If this is a duet, clearly identify each vocalist and make the parts easy to follow.
+- If spoken content is requested, clearly separate spoken and sung sections.
+- If instrumental is requested, do not create vocals.
+- Keep the song coherent and suitable for the requested duration.
+- Do not mention or imitate living recording artists.
+${missing.length?`- Some fields are incomplete (${missing.join(", ")}). Make reasonable suggestions but do not invent highly specific personal facts.`:""}`;
+ $("aiPrompt").value=p;
+ $("promptPlaceholder").classList.add("hidden"); $("aiPrompt").classList.remove("hidden");
+ if(scroll) $("aiPrompt").scrollIntoView({behavior:"smooth",block:"center"});
+}
+async function copyString(text){
+ try{await navigator.clipboard.writeText(text); alert("Copied.");}
+ catch(e){const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();alert("Copied.");}
+}
+function copyAI(){ if(!$("aiPrompt").value) generatePrompt(false); copyString($("aiPrompt").value); }
+function copyText(id){ if($(id).value.trim()) copyString($(id).value); else alert("Nothing to copy yet."); }
+function copyAllSuno(){
+ const parts=[];
+ if($("lyrics").value.trim()) parts.push("LYRICS\n"+$("lyrics").value.trim());
+ if($("styles").value.trim()) parts.push("STYLES / MUSIC DIRECTION\n"+$("styles").value.trim());
+ if($("sunoPrompt").value.trim()) parts.push("ADDITIONAL SUNO INSTRUCTIONS\n"+$("sunoPrompt").value.trim());
+ if(!parts.length){alert("Paste or enter your Suno material first.");return;}
+ copyString(parts.join("\n\n"));
+}
+function getSongs(){try{return JSON.parse(localStorage.getItem("sunoSongs")||"[]")}catch(e){return[]}}
+function saveSong(){
+ const url=$("songUrl").value.trim();
+ if(url && !/^https?:\/\//i.test(url)){alert("Please enter a full link beginning with https://");return;}
+ const d=getData(), songs=getSongs();
+ songs.unshift({id:Date.now(),date:new Date().toLocaleString(),title:d.title||"Untitled Song",genre:d.genre,singers:d.singers,url,notes:$("notes").value.trim(),duration:d.duration});
+ try{localStorage.setItem("sunoSongs",JSON.stringify(songs));alert("Song saved on this device.");renderSongs();}
+ catch(e){alert("This browser could not save the record. Try another browser or enable local storage.");}
+}
+function deleteSong(id){
+ if(!confirm("Delete this saved song?")) return;
+ const songs=getSongs().filter(s=>s.id!==id); localStorage.setItem("sunoSongs",JSON.stringify(songs));renderSongs();
+}
+function renderSongs(){
+ const q=$("searchSongs").value.toLowerCase(); const songs=getSongs().filter(s=>(s.title+" "+s.genre+" "+s.singers+" "+s.notes).toLowerCase().includes(q));
+ const box=$("songsList");
+ if(!songs.length){box.innerHTML='<p class="small">No saved songs yet.</p>';return;}
+ box.innerHTML=songs.map(s=>`<div class="song">
+   <div class="song-title">${esc(s.title)}</div>
+   <div class="song-meta">${esc(s.date)} • ${esc(s.duration||"")} • ${esc(s.genre||"")} • ${esc(s.singers||"")}</div>
+   ${s.notes?`<div>${esc(s.notes)}</div>`:""}
+   ${s.url?`<p><a href="${safeUrl(s.url)}" target="_blank" rel="noopener">🎵 Open Suno song</a></p>`:"<p class=\"small\">No Suno link saved.</p>"}
+   <button type="button" class="danger" onclick="deleteSong(${s.id})">Delete</button>
+ </div>`).join("");
+}
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function safeUrl(u){return /^https?:\/\//i.test(u)?esc(u):"#";}
+loadPreset("example");
+renderSongs();
+</script>
+</body>
+</html>
